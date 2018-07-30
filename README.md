@@ -1,4 +1,4 @@
-# event-machine-skeleton
+# event-machine-symfony-skeleton
 Dockerized symfony-skeleton for prooph software [Event Machine](https://github.com/proophsoftware/event-machine)
 
 ## Installation
