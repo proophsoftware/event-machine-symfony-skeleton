@@ -1,0 +1,22 @@
+parameters:
+    rabbit_host: '%env(RABBIT_HOST)%'
+    rabbit_port: '%env(int:RABBIT_PORT)%'
+    rabbit_login: '%env(RABBIT_USER)%'
+    rabbit_password: '%env(RABBIT_PWD)%'
+    rabbit_vhost: '%env(RABBIT_VHOST)%'
+    rabbit_persistent: '%env(bool:RABBIT_PERSISTENT)%'
+    rabbit_read_timeout: '%env(float:RABBIT_READ_TIMEOUT)%'
+    rabbit_write_timeout: '%env(float:RABBIT_WRITE_TIMEOUT)%'
+    rabbit_heartbeat: '%env(int:RABBIT_HEARTBEAT)%'
+    rabbit_ui_exchange: '%env(RABBIT_UI_EXCHANGE)%'
+    rabbit_verify: false
+    env(RABBIT_READ_TIMEOUT): 1
+    env(RABBIT_HOST): rabbit
+    env(RABBIT_PORT): 5672
+    env(RABBIT_USER): event-machine
+    env(RABBIT_PWD): event-machine
+    env(RABBIT_VHOST): /event-machine
+    env(RABBIT_PERSISTENT): false
+    env(RABBIT_WRITE_TIMEOUT): 1
+    env(RABBIT_HEARTBEAT): 0
+    env(RABBIT_UI_EXCHANGE): ui-exchange

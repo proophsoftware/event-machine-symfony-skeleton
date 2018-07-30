@@ -1,0 +1,130 @@
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
+parameters:
+
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+        public: true       # Allows optimizing the container by removing unused services; this also means
+                            # fetching services directly from the container via $container->get() won't work.
+                            # The best practice is to be explicit about your dependencies anyway.
+
+    # makes classes in src/ available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    App\:
+        resource: '../src/*'
+        exclude: '../src/{DependencyInjection,Tests,Utils,Kernel.php}'
+
+    # controllers are imported separately to make sure services can be injected
+    # as action arguments even if you don't extend any base controller class
+    App\Controller\:
+        resource: '../src/Controller'
+        tags: ['controller.service_arguments']
+
+    App\Command\RunProjectionCommand:
+        arguments:
+            $env: '%kernel.environment%'
+
+    App\Command\ResetProjectionCommand:
+        arguments:
+            $env: '%kernel.environment%'
+            $projectionManager: '@Prooph\EventStore\Projection\ProjectionManager'
+
+    Prooph\EventStore\EventStore:
+        class: Prooph\EventStore\TransactionalActionEventEmitterEventStore
+        factory: ['App\Utils\EventStoreFactory', create]
+        arguments:
+            $persistenceStrategy: '@Prooph\EventStore\Pdo\PersistenceStrategy\PostgresSingleStreamStrategy'
+
+    Prooph\EventMachine\EventMachine:
+        class: Prooph\EventMachine\EventMachine
+        factory: ['App\Utils\EventMachineFactory', create]
+        arguments:
+            $descriptions:
+            - 'App\Api\Type'
+            - 'App\Api\Command'
+            - 'App\Api\Event'
+            - 'App\Api\Query'
+            - 'App\Api\Aggregate'
+            - 'App\Api\Projection'
+            - 'App\Api\Listener'
+
+    !php/const Prooph\EventMachine\EventMachine::SERVICE_ID_EVENT_STORE:
+        alias: Prooph\EventStore\EventStore
+
+    !php/const Prooph\EventMachine\EventMachine::SERVICE_ID_PROJECTION_MANAGER:
+        alias: Prooph\EventStore\Projection\ProjectionManager
+
+    !php/const Prooph\EventMachine\EventMachine::SERVICE_ID_COMMAND_BUS:
+        alias: App\Infrastructure\ServiceBus\CommandBus
+
+    !php/const Prooph\EventMachine\EventMachine::SERVICE_ID_EVENT_BUS:
+        alias: App\Infrastructure\ServiceBus\EventBus
+
+    !php/const Prooph\EventMachine\EventMachine::SERVICE_ID_QUERY_BUS:
+        alias: App\Infrastructure\ServiceBus\QueryBus
+
+    !php/const Prooph\EventMachine\EventMachine::SERVICE_ID_DOCUMENT_STORE:
+        alias: Prooph\EventMachine\Persistence\DocumentStore
+
+    Prooph\EventMachine\Projecting\AggregateProjector:
+        class: Prooph\EventMachine\Projecting\AggregateProjector
+
+    Prooph\EventStore\Projection\ProjectionManager:
+        class: Prooph\EventStore\Pdo\Projection\PostgresProjectionManager
+
+    Prooph\EventMachine\Persistence\DocumentStore:
+        class: Prooph\EventMachine\Postgres\PostgresDocumentStore
+        arguments:
+            $docIdSchema: 'CHAR(36) NOT NULL'
+
+    Prooph\EventStore\Pdo\PersistenceStrategy\PostgresSingleStreamStrategy:
+        class: Prooph\EventStore\Pdo\PersistenceStrategy\PostgresSingleStreamStrategy
+
+    PDO:
+        class: \PDO
+        arguments:
+            $dsn: '%pdo_dsn%'
+            $username: '%pdo_user%'
+            $passwd: '%pdo_pwd%'
+
+    App\Infrastructure\ServiceBus\CommandBus:
+        class: App\Infrastructure\ServiceBus\CommandBus
+        factory: ['App\Utils\MessageBusFactory', createCommandBus]
+
+    App\Infrastructure\ServiceBus\EventBus:
+        class: App\Infrastructure\ServiceBus\EventBus
+        factory: ['App\Utils\MessageBusFactory', createEventBus]
+
+    App\Infrastructure\ServiceBus\QueryBus:
+        class: App\Infrastructure\ServiceBus\QueryBus
+        factory: ['App\Utils\MessageBusFactory', createQueryBus]
+
+    App\Utils\CollectionNameFactory: ~
+
+    Prooph\ServiceBus\Message\HumusAmqp\AmqpMessageProducer:
+        factory: ['App\Infrastructure\UiExchange\MessageProducerFactory', createMessageAmqpMessageProducer]
+        arguments: ['@Humus\Amqp\Driver\AmqpExtension\Connection', '%rabbit_ui_exchange%']
+
+    Humus\Amqp\Driver\AmqpExtension\Connection:
+        arguments:
+            $options:
+                host: '%rabbit_host%'
+                port: '%rabbit_port%'
+                login: '%rabbit_login%'
+                password: '%rabbit_password%'
+                vhost: '%rabbit_vhost%'
+                persistent: '%rabbit_persistent%'
+                read_timeout: '%rabbit_read_timeout%'
+                write_timeout: '%rabbit_write_timeout%'
+                heartbeat: '%rabbit_heartbeat%'
+                verify: '%rabbit_verify%'
+
+    # add more service definitions when explicit configuration is needed
+    # please note that last definitions always *replace* previous ones
+

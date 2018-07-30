@@ -1,0 +1,49 @@
+version: '2'
+
+services:
+  nginx:
+    image: prooph/nginx:www
+    ports:
+      - 8080:80
+      - 445:443
+    links:
+      - php:php
+    volumes:
+      - .:/var/www
+
+  php:
+    image: prooph/php:7.1-fpm
+    volumes:
+      - .:/var/www
+
+  event_machine_projection:
+    image: prooph/php:7.1-cli
+    volumes:
+      - .:/app
+    depends_on:
+      - postgres
+    command: php /app/bin/console app:projection:run
+    # Needed so that projection is automatically restarted when new events are registered in event machine
+    # which are not yet known in the long-running projection process, see https://github.com/proophsoftware/event-machine-skeleton/issues/3
+    restart: on-failure
+
+  postgres:
+    image: postgres:alpine
+    ports:
+      - 5432:5432
+    volumes:
+      - ./env/postgres/initdb.d:/docker-entrypoint-initdb.d:ro
+      - data-postgres:/var/lib/postgresql/data
+
+  rabbit:
+    image: prooph/rabbitmq
+    ports:
+      - 8081:15671
+      - 15699:15691
+    volumes:
+      - ./env/rabbit/broker_definitions.json:/opt/definitions.json:ro
+      - ./env/rabbit/rabbitmq.config:/etc/rabbitmq/rabbitmq-prooph.config
+
+volumes:
+  data-postgres:
+    driver: local

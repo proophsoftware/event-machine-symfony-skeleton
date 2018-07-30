@@ -1,0 +1,7 @@
+parameters:
+    pdo_dsn: '%env(PDO_DSN)%'
+    pdo_user: '%env(PDO_USER)%'
+    pdo_pwd: '%env(PDO_PWD)%'
+    env(PDO_DSN): 'pgsql:host=postgres port=5432 dbname=event_machine'
+    env(PDO_USER): postgres
+    env(PDO_PWD): ''
