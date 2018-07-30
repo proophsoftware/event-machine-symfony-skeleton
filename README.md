@@ -75,29 +75,6 @@ You can run the tests using docker:
 docker-compose run php php vendor/bin/phpunit
 ```
 
-## Message Flow Analyzer
-
-Event Machine ships with [prooph/message-flow-analyzer](https://github.com/prooph/message-flow-analyzer) support.
-This means that you can run the analyzer to get an overview of the system. In case of Event Machine the
-analyzer mainly reads descriptions and creates a graph of command-aggregate-event-process-manager relations.
-The generated graph can be viewed using the [prooph/event-store-mgmt-ui](https://github.com/prooph/event-store-mgmt-ui)
-
-Following command executes the message flow analyzer for the project:
-
-```
-docker-compose run analyzer php vendor/bin/prooph-analyzer project:analyze analyzer -vvv
-```
-
-This will generate an output file named `prooph_message_flow.json`
-
-Drag and Drop that file into a message flow tab of prooph/event-store-mgmt-ui.
-
-*Note: You can edit, save and export the graph in the UI. If you make changes to the system and want to update the graph,
-just run the command above again and drop the resulting file on your edited version of the graph. New graph nodes will appear while existing and possibly edited
-nodes won't be overridden. Hence, `prooph_message_flow.json` file is ignored by git. You can run the analyzer as often as you want. An edited and exported
-version of the graph can be found in the file `message_flow_analysis.json`. This file is version controlled. Whenever you make
-changes to the graph which you want to share with your teammates override `message_flow_analysis.json` with your edited graph version and commit it.*
-
 ## Troubleshooting
 
 With the command `docker-compose ps` you can list the running containers. This should look like the following list:
@@ -135,14 +112,14 @@ which is restarted by docker in case of a failure. The projection process dies f
 If you recognize that your read models are not up-to-date or you need to reset the read model you can use this command:
 
 ```bash
-$ docker-compose run php php bin/reset.php
+$ docker-compose run php php bin/console app:projection:reset
 ```
 
 If you still have trouble try a step by step approach:
 
 ```bash
 $ docker-compose stop event_machine_projection
-$ docker-compose run php php bin/reset.php
+$ docker-compose run php php bin/console app:projection:reset
 $ docker-compose up -d
 ```
 
