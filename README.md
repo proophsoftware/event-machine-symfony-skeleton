@@ -1,5 +1,5 @@
 # event-machine-skeleton
-Dockerized skeleton for prooph software [Event Machine](https://github.com/proophsoftware/event-machine)
+Dockerized symfony-skeleton for prooph software [Event Machine](https://github.com/proophsoftware/event-machine)
 
 ## Installation
 Please make sure you have installed [Docker](https://docs.docker.com/engine/installation/ "Install Docker") and [Docker Compose](https://docs.docker.com/compose/install/ "Install Docker Compose").
@@ -150,7 +150,9 @@ And if you cannot or don't want to use Docker then provide the needed infrastruc
 [![prooph software](https://github.com/codeliner/php-ddd-cargo-sample/blob/master/docs/assets/prooph-software-logo.png)](http://prooph.de)
 
 Event Machine is maintained by the [prooph software team](http://prooph-software.de/). The source code of Event Machine 
-is open sourced along with an API documentation and a getting started demo. Prooph software offers commercial support and workshops
+is open sourced along with an API documentation and a getting started demo. Prooph software offers commercial support and workshops.
 for Event Machine as well as for the [prooph components](http://getprooph.org/).
+
+The symfony-skeleton is maintained by [sblum](https://www.sblum.de/).
 
 If you are interested in this offer or need project support please [get in touch](http://getprooph.org/#get-in-touch).
