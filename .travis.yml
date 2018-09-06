@@ -1,0 +1,37 @@
+sudo: false
+
+language: php
+
+php: '7.2'
+
+branches:
+  only:
+  - master
+
+cache:
+  directories:
+  - $HOME/.composer/cache
+
+env:
+  global:
+  - SYMFONY_DEPRECATIONS_HELPER="strict"
+  - APP_ENV="test"
+
+git:
+  depth: false
+  submodules: false
+
+before_install:
+- stty cols 120
+- phpenv config-rm xdebug.ini
+- INI_FILE=~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
+- echo date.timezone = Europe/Berlin >> $INI_FILE
+- echo memory_limit = -1 >> $INI_FILE
+- echo opcache.enable_cli = 1 >> $INI_FILE
+
+install:
+- composer validate --strict
+- composer install --quiet --no-interaction --prefer-dist
+
+script:
+- bin/phpunit -v
