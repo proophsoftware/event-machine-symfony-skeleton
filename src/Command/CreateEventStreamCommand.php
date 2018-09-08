@@ -39,6 +39,6 @@ class CreateEventStreamCommand extends Command
     {
         $streamName = new StreamName($input->getArgument('name'));
         $this->eventStore->create(new Stream($streamName, new \ArrayIterator([])));
-        $output->writeln('<info>'.'[OK] Event-Stream'.$input->getArgument('name').'was created'.'</info>');
+        $output->writeln('<info>'.'[OK] Event-Stream "'.$input->getArgument('name').'" was created'.'</info>');
     }
 }
