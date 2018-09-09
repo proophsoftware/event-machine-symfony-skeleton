@@ -11,7 +11,7 @@ use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @Route("/pi", methods={"POST"})
+ * @Route("/api", methods={"POST"})
  */
 class MessageBoxController extends Controller
 {
