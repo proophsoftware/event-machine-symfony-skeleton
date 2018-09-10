@@ -26,5 +26,5 @@ abstract class AbstractFinder
         $this->documentStore = $documentStore;
     }
 
-    abstract public function __invoke(Message $deviceQuery, Deferred $deferred): void;
+    abstract public function __invoke(Message $query, Deferred $deferred): void;
 }
