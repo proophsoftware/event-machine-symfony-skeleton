@@ -41,6 +41,7 @@ class JsonExceptionListener implements EventSubscriberInterface
                     $exception instanceof HttpException ? $exception->getStatusCode() : Response::HTTP_SERVICE_UNAVAILABLE
                 )
             );
+            return;
         }
 
         $e->setResponse(
