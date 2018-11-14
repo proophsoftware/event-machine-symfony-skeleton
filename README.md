@@ -145,6 +145,13 @@ Focus of the skeleton is to provide *an easy to use development environment*, he
 **Make sure to secure the containers before you deploy them anywhere!** You should build and use your own docker containers in production anyway.
 And if you cannot or don't want to use Docker then provide the needed infrastructure the way you prefer and just point event machine to it by adjusting configuration.
 
+## Version
+1. Increase version in config/packages/prod/version.yaml.
+```yaml
+parameters:
+    version: 1.0.0
+```
+
 ## Powered by prooph software
 
 [![prooph software](https://github.com/codeliner/php-ddd-cargo-sample/blob/master/docs/assets/prooph-software-logo.png)](http://prooph.de)

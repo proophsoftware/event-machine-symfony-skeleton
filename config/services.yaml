@@ -26,13 +26,8 @@ services:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
 
-    App\Command\RunProjectionCommand:
-        arguments:
-            $env: '%kernel.environment%'
-
     App\Command\ResetProjectionCommand:
         arguments:
-            $env: '%kernel.environment%'
             $projectionManager: '@Prooph\EventStore\Projection\ProjectionManager'
 
     Prooph\EventStore\EventStore:
@@ -41,10 +36,16 @@ services:
         arguments:
             $persistenceStrategy: '@Prooph\EventStore\Pdo\PersistenceStrategy\PostgresSingleStreamStrategy'
 
+    App\Infrastructure\Plugin\MetadataEnricherPluginFactory:
+        arguments:
+            $plugins: []
+
     Prooph\EventMachine\EventMachine:
         class: Prooph\EventMachine\EventMachine
         factory: ['App\Utils\EventMachineFactory', create]
         arguments:
+            $env: '%kernel.environment%'
+            $version: '%version%'
             $descriptions:
             - 'App\Api\Type'
             - 'App\Api\Command'

@@ -35,6 +35,7 @@ return PhpCsFixer\Config::create()
         'semicolon_after_instruction' => true,
         'strict_comparison' => true,
         'strict_param' => true,
+        'declare_strict_types' => true,
     ])
     ->setFinder($finder)
     ->setUsingCache(true)

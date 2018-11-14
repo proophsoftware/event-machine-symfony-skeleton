@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Utils;
 
+use App\Infrastructure\Plugin\MetadataEnricherPluginFactory;
 use Prooph\Common\Event\ProophActionEventEmitter;
 use Prooph\EventMachine\EventMachine;
 use Prooph\EventStore\Pdo\PersistenceStrategy;
@@ -10,17 +13,21 @@ use Prooph\EventStore\TransactionalActionEventEmitterEventStore;
 
 class EventStoreFactory
 {
-    public static function create(EventMachine $eventMachine, PersistenceStrategy $persistenceStrategy, \PDO $pdoConnection): TransactionalActionEventEmitterEventStore
+    public static function create(EventMachine $eventMachine, PersistenceStrategy $persistenceStrategy, \PDO $pdoConnection, MetadataEnricherPluginFactory $metadataEnricherPluginFactory): TransactionalActionEventEmitterEventStore
     {
         $eventStore = new PostgresEventStore(
-                $eventMachine->messageFactory(),
-                $pdoConnection,
-                $persistenceStrategy
-            );
+            $eventMachine->messageFactory(),
+            $pdoConnection,
+            $persistenceStrategy
+        );
 
-        return new TransactionalActionEventEmitterEventStore(
-                $eventStore,
-                new ProophActionEventEmitter(TransactionalActionEventEmitterEventStore::ALL_EVENTS)
-            );
+        $transactionalActionEventEmitterEventStore = new TransactionalActionEventEmitterEventStore(
+            $eventStore,
+            new ProophActionEventEmitter(TransactionalActionEventEmitterEventStore::ALL_EVENTS)
+        );
+
+        $metadataEnricherPluginFactory->createMetadataEnricherPlugin()->attachToEventStore($transactionalActionEventEmitterEventStore);
+
+        return $transactionalActionEventEmitterEventStore;
     }
 }

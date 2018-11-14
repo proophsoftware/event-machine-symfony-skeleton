@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\EventListener;
 
 use Prooph\ServiceBus\Exception\MessageDispatchException;
@@ -41,6 +43,7 @@ class JsonExceptionListener implements EventSubscriberInterface
                     $exception instanceof HttpException ? $exception->getStatusCode() : Response::HTTP_SERVICE_UNAVAILABLE
                 )
             );
+
             return;
         }
 

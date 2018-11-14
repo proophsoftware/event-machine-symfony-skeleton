@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Command;
 
 use Prooph\EventMachine\EventMachine;
@@ -8,19 +10,19 @@ use Prooph\EventStore\Projection\ProjectionManager;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 class ResetProjectionCommand extends Command
 {
     private $eventMachine;
-    private $env;
     private $projectionManager;
 
-    public function __construct(EventMachine $eventMachine, ProjectionManager $projectionManager, string $env, ?string $name = null)
+    public function __construct(EventMachine $eventMachine, ProjectionManager $projectionManager, ?string $name = null)
     {
         parent::__construct($name);
 
         $this->eventMachine = $eventMachine;
-        $this->env = $env;
         $this->projectionManager = $projectionManager;
     }
 
@@ -38,10 +40,17 @@ class ResetProjectionCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $devMode = EventMachine::ENV_DEV === $this->env;
-        $this->eventMachine->bootstrap($this->env, $devMode);
+        $outputStyle = new SymfonyStyle($input, $output);
 
-        $output->writeln('<info>'.'[OK] Resetting '.ProjectionRunner::eventMachineProjectionName($this->eventMachine->appVersion()).'</info>');
+        $helper = $this->getHelper('question');
+        $question = new ConfirmationQuestion("You are going to reset the event-machine-projection. Are you sure ? \n (y|n)", false);
+        if (!$helper->ask($input, $output, $question)) {
+            return;
+        }
+
+        $outputStyle->title('Projektionen :');
+        $outputStyle->listing($this->projectionManager->fetchProjectionNames(null));
+        $outputStyle->success('Resetting '.ProjectionRunner::eventMachineProjectionName($this->eventMachine->appVersion()).' ...');
         $this->projectionManager->resetProjection(ProjectionRunner::eventMachineProjectionName($this->eventMachine->appVersion()));
     }
 }

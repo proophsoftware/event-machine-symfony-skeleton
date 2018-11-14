@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use Prooph\EventMachine\EventMachine;
@@ -20,9 +22,6 @@ class MessageBoxController extends Controller
      */
     public function handle(Request $request, EventMachine $eventMachine, KernelInterface $kernel)
     {
-        $env = $kernel->getEnvironment();
-        $devMode = EventMachine::ENV_DEV === $env;
-        $eventMachine->bootstrap($env, $devMode);
         $messageBox = $eventMachine->httpMessageBox();
 
         $psr7Factory = new DiactorosFactory();
@@ -39,9 +38,6 @@ class MessageBoxController extends Controller
      */
     public function handleQuery(Request $request, EventMachine $eventMachine, KernelInterface $kernel)
     {
-        $env = $kernel->getEnvironment();
-        $devMode = EventMachine::ENV_DEV === $env;
-        $eventMachine->bootstrap($env, $devMode);
         $messageBox = $eventMachine->httpMessageBox();
 
         $psr7Factory = new DiactorosFactory();

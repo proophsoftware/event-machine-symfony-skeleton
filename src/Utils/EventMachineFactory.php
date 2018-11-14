@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Utils;
 
 use Prooph\EventMachine\Container\ContainerChain;
@@ -9,11 +11,14 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class EventMachineFactory
 {
+    /**
+     * @var EventMachine
+     */
     private static $instance;
 
-    public static function create(array $descriptions, ContainerInterface $container): EventMachine
+    public static function create(array $descriptions, ContainerInterface $container, string $version, string $env): EventMachine
     {
-        if (null === static::$instance) {
+        if (null === static::$instance || 'test' === $env) {
             static::$instance = new EventMachine();
 
             foreach ($descriptions as $desc) {
@@ -25,7 +30,11 @@ class EventMachineFactory
                 new EventMachineContainer(static::$instance)
             );
 
-            static::$instance->initialize($containerChain);
+            static::$instance->initialize($containerChain, $version);
+
+            if ('test' !== $env) {
+                static::$instance->bootstrap($env, 'prod' !== $env);
+            }
 
             return static::$instance;
         }

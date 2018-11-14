@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Command;
 
 use Prooph\EventMachine\EventMachine;
@@ -10,14 +12,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 class RunProjectionCommand extends Command
 {
     private $eventMachine;
-    private $env;
 
-    public function __construct(EventMachine $eventMachine, string $env, ?string $name = null)
+    public function __construct(EventMachine $eventMachine, ?string $name = null)
     {
         parent::__construct($name);
 
         $this->eventMachine = $eventMachine;
-        $this->env = $env;
     }
 
     protected function configure()
@@ -34,9 +34,6 @@ class RunProjectionCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $devMode = EventMachine::ENV_DEV === $this->env;
-        $this->eventMachine->bootstrap($this->env, $devMode);
-
         $iterations = 0;
 
         while (true) {
